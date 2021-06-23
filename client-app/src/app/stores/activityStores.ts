@@ -4,19 +4,22 @@ import { Activity } from "../models/activity"
 import {v4 as uuid} from 'uuid'
 
 export default class ActivityStore {
-    activities: Activity[] = []
     activityRegistry = new Map<string, Activity>()
     selectedActivity: Activity | undefined = undefined
     editMode = false
     loading = false
-    loadingInitial = false
+    loadingInitial = true
 
     constructor() {
         makeAutoObservable(this)
     }
 
+    get activitiesByDate() {
+        return Array.from(this.activityRegistry.values()).sort((a, b) =>
+        Date.parse(a.date) - Date.parse(b.date))
+    }
+
     loadActivities = async () => {
-        this.setLoadingInitial(true)
         try {
             const activities = await agent.Activities.list()
             activities.forEach(activity => {
@@ -94,7 +97,7 @@ export default class ActivityStore {
         try {
             await agent.Activities.delete(id)
             runInAction(() => {
-                this.activities = [...this.activities.filter(x => x.id !== id)]
+                this.activityRegistry.delete(id)
                 if(this.selectedActivity?.id === id) this.cancelSelectActivity()
                 this.loading = false
             })

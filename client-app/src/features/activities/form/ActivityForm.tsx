@@ -1,9 +1,10 @@
+import { observer } from 'mobx-react-lite'
 import React, { ChangeEvent, useState } from 'react'
 import { Button, Form, Segment } from 'semantic-ui-react'
 import { useStore } from '../../../app/stores/store'
 
 
-export default function ActivityForm() {
+export default observer(function ActivityForm() {
 
     const {activityStore} = useStore()
     const {selectedActivity, closeForm, createActivity, updateActivity, loading} = activityStore
@@ -43,4 +44,4 @@ export default function ActivityForm() {
             </Form>
         </Segment>
     )
-}
+})
